@@ -1,0 +1,37 @@
+{
+    "PackageHeaderInformation": {
+        "PackageHeaderIdentifier": "F018878CCB7D49439800A02F059ACA02",
+        "PackageHeaderFormatVersion": 1,
+        "PackageReleaseDateTime": "2026-02-22 00:00:00",
+        "PackageVersionString": "TestPkg1.0"
+    },
+    "FirmwareDeviceIdentificationArea": [
+        {
+            "DeviceUpdateOptionFlags": [],
+            "ComponentImageSetVersionString": "1.0.0",
+            "ApplicableComponents": [0, 1],
+            "Descriptors": [
+                {
+                    "DescriptorType": 2,
+                    "DescriptorData": "162023C93EC5411595F448701D49D675"
+                }
+            ]
+        }
+    ],
+    "ComponentImageInformationArea": [
+        {
+            "ComponentClassification": 10,
+            "ComponentIdentifier": 100,
+            "ComponentOptions": [],
+            "RequestedComponentActivationMethod": [],
+            "ComponentVersionString": "RejectMe1.0"
+        },
+        {
+            "ComponentClassification": 10,
+            "ComponentIdentifier": 200,
+            "ComponentOptions": [],
+            "RequestedComponentActivationMethod": [],
+            "ComponentVersionString": "AcceptMe1.0"
+        }
+    ]
+}

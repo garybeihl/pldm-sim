@@ -1,0 +1,3 @@
+option('libpldm_dir', type: 'string',
+    value: '/home/gmbeihl/claude/openbmc/libpldm',
+    description: 'Path to libpldm source directory')

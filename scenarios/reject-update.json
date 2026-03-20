@@ -1,0 +1,15 @@
+{
+  "device": {
+    "uuid": "162023C9-3EC5-4115-95F4-48701D49D675",
+    "name": "TestDevice"
+  },
+  "firmware_update": {
+    "image_set_version": "1.0.0",
+    "components": [
+      { "id": 100, "classification": 10, "version": "RejectMe1.0",
+        "can_update": false, "reject_reason": "COMP_NOT_SUPPORTED" },
+      { "id": 200, "classification": 10, "version": "AcceptMe1.0",
+        "can_update": true }
+    ]
+  }
+}

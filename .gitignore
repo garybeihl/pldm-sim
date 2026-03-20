@@ -1,0 +1,16 @@
+# Build directories
+build-host/
+build-arm/
+build*/
+
+# Compiled binaries
+*.o
+*.so
+*.a
+mctp_test_send_arm
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/

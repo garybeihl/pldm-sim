@@ -1,0 +1,13 @@
+{
+  "device": {
+    "uuid": "AABBCCDD-1122-3344-5566-778899AABBCC",
+    "name": "FailDevice"
+  },
+  "firmware_update": {
+    "image_set_version": "2.0.0",
+    "components": [
+      { "id": 300, "classification": 10, "version": "BadFW2.0",
+        "can_update": true, "verify_result": "VERIFICATION_FAILURE" }
+    ]
+  }
+}

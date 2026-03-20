@@ -1,0 +1,14 @@
+{
+  "device": {
+    "uuid": "162023C9-3EC5-4115-95F4-48701D49D675",
+    "name": "GPU0",
+    "entity_type": 152
+  },
+  "firmware_update": {
+    "image_set_version": "1.0.0",
+    "components": [
+      { "id": 200, "classification": 10, "version": "FW1.0", "can_update": true }
+    ]
+  },
+  "platform": { "enabled": true }
+}
