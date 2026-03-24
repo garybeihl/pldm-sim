@@ -1,0 +1,13 @@
+{
+  "device": {
+    "uuid": "162023C9-3EC5-4115-95F4-48701D49D675",
+    "name": "VerifyFailDevice"
+  },
+  "firmware_update": {
+    "image_set_version": "1.0.0",
+    "components": [
+      { "id": 200, "classification": 10, "version": "AcceptMe1.0",
+        "can_update": true, "verify_result": "VERIFICATION_FAILURE" }
+    ]
+  }
+}
