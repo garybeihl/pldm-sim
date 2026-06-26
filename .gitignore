@@ -2,6 +2,12 @@
 build-host/
 build-arm/
 build*/
+build/
+
+# Local-only mctp-sim subproject (provided out-of-tree when -Duse_mctp_sim=true)
+subprojects/mctp-sim
+subprojects/.wraplock
+subprojects/packagecache/
 
 # Compiled binaries
 *.o

@@ -50,6 +50,10 @@
 
 #include <nlohmann/json.hpp>
 
+#ifdef USE_MCTP_SIM
+#include "mctp_sim.hpp" // shared MCTP device-side transport (mctp-sim)
+#endif
+
 using Json = nlohmann::json;
 
 /* BMC (pldmd) EID */
@@ -568,6 +572,12 @@ static const struct pldm_fd_ops sim_fd_ops = {
 static int handle_mctp_control(const SimConfig &cfg, const uint8_t *req,
 			       size_t req_len, uint8_t *resp, size_t *resp_len)
 {
+#ifdef USE_MCTP_SIM
+	mctpsim::Endpoint ep{ cfg.eid, cfg.uuid,
+			      { mctpsim::MCTP_TYPE_CONTROL,
+				mctpsim::MCTP_TYPE_PLDM } };
+	return mctpsim::handleControl(ep, req, req_len, resp, resp_len);
+#else
 	if (req_len < 3) {
 		return -1;
 	}
@@ -628,6 +638,7 @@ static int handle_mctp_control(const SimConfig &cfg, const uint8_t *req,
 	}
 
 	return 0;
+#endif
 }
 
 /* ===== MCTP serial framing for direct TTY write ===== */
@@ -700,6 +711,9 @@ static int send_mctp_serial_frame(int tty_fd, const uint8_t *data,
 
 static int create_raw_mctp_socket(const char *ifname, int *out_ifindex)
 {
+#ifdef USE_MCTP_SIM
+	return mctpsim::createRawSocket(ifname, out_ifindex);
+#else
 	int sock = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
 	if (sock < 0) {
 		perror("socket AF_PACKET");
@@ -730,12 +744,21 @@ static int create_raw_mctp_socket(const char *ifname, int *out_ifindex)
 	printf("[pldm-sim] AF_PACKET socket bound to %s (ifindex %d)\n",
 	       ifname, static_cast<int>(ifindex));
 	return sock;
+#endif
 }
 
 static void handle_raw_mctp_frame(const SimConfig &cfg, int raw_sock,
 				  int ctrl_sock, int ifindex,
 				  const uint8_t *frame, size_t frame_len)
 {
+#ifdef USE_MCTP_SIM
+	(void)ctrl_sock;
+	mctpsim::Endpoint ep{ cfg.eid, cfg.uuid,
+			      { mctpsim::MCTP_TYPE_CONTROL,
+				mctpsim::MCTP_TYPE_PLDM } };
+	mctpsim::handleRawFrame(ep, raw_sock, ifindex, frame, frame_len);
+	return;
+#else
 	if (frame_len < 5) {
 		printf("[pldm-sim] Raw: frame too short (%zu bytes)\n",
 		       frame_len);
@@ -800,6 +823,7 @@ static void handle_raw_mctp_frame(const SimConfig &cfg, int raw_sock,
 		printf("[pldm-sim] Sent %zd byte control response to EID %u\n",
 		       sent, src_eid);
 	}
+#endif
 }
 
 /* ===== PLDM base message handling ===== */
@@ -1165,6 +1189,9 @@ static int handle_pldm_platform(SimContext &ctx, const uint8_t *recv_buf,
 
 static int setup_tty(const char *pty_path)
 {
+#ifdef USE_MCTP_SIM
+	return mctpsim::setupTty(pty_path);
+#else
 	int fd = open(pty_path, O_RDWR | O_NOCTTY);
 	if (fd < 0) {
 		perror("open PTY");
@@ -1183,10 +1210,14 @@ static int setup_tty(const char *pty_path)
 
 	printf("[pldm-sim] MCTP serial line discipline set on %s\n", pty_path);
 	return fd;
+#endif
 }
 
 static int find_mctp_interface(char *ifname, size_t ifname_len)
 {
+#ifdef USE_MCTP_SIM
+	return mctpsim::findInterface(ifname, ifname_len);
+#else
 	FILE *fp = popen("ls -1 /sys/class/net/ | grep '^mctp' | tail -1",
 			 "r");
 	if (!fp) {
@@ -1209,10 +1240,14 @@ static int find_mctp_interface(char *ifname, size_t ifname_len)
 
 	printf("[pldm-sim] Found MCTP interface: %s\n", ifname);
 	return 0;
+#endif
 }
 
 static int setup_mctp_addressing(const char *ifname, uint8_t eid)
 {
+#ifdef USE_MCTP_SIM
+	return mctpsim::setupAddressing(ifname, eid, mctp_tool_path);
+#else
 	char cmd[512];
 	int rc;
 
@@ -1249,10 +1284,14 @@ static int setup_mctp_addressing(const char *ifname, uint8_t eid)
 	       "route to EID %d\n",
 	       eid, BMC_EID);
 	return 0;
+#endif
 }
 
 static int create_mctp_socket(uint8_t msg_type, mctp_eid_t bind_eid)
 {
+#ifdef USE_MCTP_SIM
+	return mctpsim::createDataSocket(msg_type, bind_eid);
+#else
 	int sock = socket(AF_MCTP, SOCK_DGRAM, 0);
 	if (sock < 0) {
 		perror("socket AF_MCTP");
@@ -1276,6 +1315,7 @@ static int create_mctp_socket(uint8_t msg_type, mctp_eid_t bind_eid)
 	printf("[pldm-sim] AF_MCTP socket bound: EID %d, type 0x%02x\n",
 	       bind_eid, msg_type);
 	return sock;
+#endif
 }
 
 static int send_mctp_msg(int sock, uint8_t dest_eid, uint8_t msg_type,

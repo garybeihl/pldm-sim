@@ -1,3 +1,6 @@
 option('libpldm_dir', type: 'string',
     value: '/home/gmbeihl/claude/openbmc/libpldm',
     description: 'Path to libpldm source directory')
+
+option('use_mctp_sim', type: 'boolean', value: false,
+    description: 'Use the shared mctp-sim transport library instead of the bundled standalone transport')

@@ -19,9 +19,19 @@ libpldm = cpp.find_library('pldm',
 
 nlohmann_json_dep = dependency('nlohmann_json', include_type: 'system')
 
+# By default pldm-sim is standalone: it carries its own MCTP device-side
+# transport and has no external dependencies beyond libpldm. Optionally,
+# -Duse_mctp_sim=true swaps that bundled transport for a shared mctp-sim
+# transport library, consumed as a meson subproject.
+extra_deps = []
+if get_option('use_mctp_sim')
+    add_project_arguments('-DUSE_MCTP_SIM', language: 'cpp')
+    extra_deps += subproject('mctp-sim').get_variable('mctpsim_dep')
+endif
+
 executable('pldm_sim',
     'pldm_sim.cpp',
     include_directories: libpldm_inc,
-    dependencies: [libpldm, nlohmann_json_dep],
+    dependencies: [libpldm, nlohmann_json_dep] + extra_deps,
     install: false,
 )
